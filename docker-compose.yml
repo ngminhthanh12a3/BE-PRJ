@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  be-server:
+    image: be-server
+    build:
+      context: ./server
+    restart: always
+    # depends_on:
+    # - mongo
+    # - broker
+    environment:
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=example
+      - MONGO_SERVICE=mongo
+      - BROKER_HOST=broker
+    # limit logs
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # mongo:
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: example
+  #   volumes:
+  #     # Set mondo db storage voulume name.
+  #     - mongo-db-dep:/data/db
+  #   # limit logs
+  #   logging:
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+  be-client:
+    image: be-client
+    build:
+      context: ./client
+    restart: always
+    # limit logs
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # broker:
+  #   image: mern-broker
+  #   build:
+  #     context: ./broker
+  #   restart: always
+  #   # limit logs
+  #   logging:
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+networks:
+  default:
+    name: mern-app_default
+    external: true
+# volumes:
+#   mongo-db-dep:
+# networks:
+#   my_network:
+#     driver: bridge

@@ -1,0 +1,77 @@
+version: "3"
+
+services:
+  be-server:
+    build:
+      dockerfile: Dockerfile-dev
+      args:
+        PORT: ${PORT}
+    ports:
+      - "4001:4001"
+    command: yarn run dev
+    environment:
+      - PORT=4001
+      - CLIENT_URL=https://localhost:4000
+      - BROKER_PORT=3002
+      - MONGO_URL=mongodb://root:example@mongo:27017/mernapp?authSource=admin&directConnection=true
+      # - MONGO_CLIENT_URL=mongodb://root:example@mongo:3003
+      - MONGO_CLIENT_URL=mongodb://root:example@mongo:27017/?retryWrites=true&w=majority
+    # bind mount
+    volumes:
+      - ./server/:/mern-app/server/
+      - /mern-app/server/node_modules
+
+  # mongo:
+  #   image: mongo:latest
+  #   ports:
+  #     - 27017:27017
+  # command: mongod --port 3003
+  #  && bash -c "/usr/bin/mongod --keyFile /data/file.key --replSet rs0 --journal --bind_ip_all"
+  # entrypoint: [
+  #     "/usr/bin/mongod",
+  #     "--keyFile",
+  #     "/data/file.key",
+  #     "--replSet",
+  #     "rs0",
+  #     "--journal",
+  #     "--bind_ip_all",
+  #     # "--auth",
+  #   ]
+  # volumes:
+  #   - "./scripts/setup.sh:/scripts/setup.sh"
+  #   - "./scripts/file.key:/data/file.key"
+
+  be-client:
+    build:
+      dockerfile: Dockerfile-dev
+      args:
+        PORT: ${PORT}
+    environment:
+      - PORT=4000
+      - UMI_APP_API_URL=https://localhost:4001
+      - UMI_APP_MONGO_URI=mongodb://root:example@localhost:3003
+      - UMI_APP_DB_NAME=mernapp
+      # - UMI_APP_DEV_CONTAINER=dev
+
+    ports:
+      - "4000:4000"
+    command: yarn start:no-mock
+    # bind mount
+    volumes:
+      - ./client/:/mern-app/client/
+      - /mern-app/client/node_modules
+
+  # broker:
+  #   build:
+  #     dockerfile: Dockerfile-dev
+  #     args:
+  #       PORT: ${PORT}
+  #   ports:
+  #     - 3002:3002
+  #   command: yarn run dev
+  #   environment:
+  #     - PORT=3002
+  #   # bind mount
+  #   volumes:
+  #     - ./broker/:/mern-app/broker/
+  #     - /mern-app/broker/node_modules

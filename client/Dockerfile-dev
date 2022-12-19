@@ -1,0 +1,24 @@
+FROM node:16
+
+WORKDIR /mern-app/client
+
+COPY package.json .
+# COPY yarn.lock .
+
+# install node_modules
+# RUN npm i -g yarn@latest 
+RUN yarn
+
+# RUN yarn add n
+# RUN n install --lts
+# RUN n use --lts
+
+# copy all compoent
+COPY . .
+
+# Listen port.
+ARG PORT
+EXPOSE $PORT
+
+# Run CMD.
+CMD ["yarn", "start:no-mock"]
