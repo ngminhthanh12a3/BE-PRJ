@@ -18,6 +18,7 @@
     name: 'monitor',
     icon: 'crown',
     component: './monitor',
+    menuRender: false,
   },
   // {
   //   path: '/welcome',
